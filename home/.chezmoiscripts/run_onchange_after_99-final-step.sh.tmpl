@@ -1,0 +1,13 @@
+#!/usr/bin/env bash
+
+# {{ template "scripts-library" }}
+
+set -eufo pipefail
+
+info "Source Sheldon to update config"
+sheldon source
+
+info "Run mise to update tools"
+mise install
+
+success "Dotfiles installation finished successfully, logout and login to apply all changes"

@@ -1,0 +1,6 @@
+{
+  "files.associations": {
+    "{**/.chezmoiscripts/*,**/*dot_*,**/*.zsh,**/git/hooks/*}": "shellscript",
+    "**/scripts-library": "shellscript"
+  }
+}

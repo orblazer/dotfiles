@@ -1,0 +1,13 @@
+# shellcheck shell=bash
+# shellcheck disable=SC1091
+#----------------------
+# .zshenv - Zsh environment file, loaded always.
+#----------------------
+# If first shell (SHLVL=1) and variable not defined, then source .profile if it exists.
+# ? This is to ensure that the environment is set up correctly for shells.
+[[ ("$SHLVL" -eq 1 && -z "${XDG_CONFIG_HOME}") && -s "./.profile" ]] && source "./.profile"
+
+# Redirect ZSH file in `.config/zsh`
+export ZDOTDIR="$HOME/.config/zsh"
+
+[[ -f "$ZDOTDIR/.zshenv" ]] && source "$ZDOTDIR/.zshenv"

@@ -1,0 +1,12 @@
+# shellcheck shell=bash
+# ? Read and export all environment variables from systemd `environment.d` directory.
+# ? This is useful for setting variables on all environments (eg, interactive shell, ssh, etc).
+for conf in ~/.config/environment.d/*.conf; do
+  # set -a to auto-export
+  set -a
+  # read file to export variables
+  # shellcheck source=/dev/null
+  . "$conf"
+  # set +a to stop auto-export
+  set +a
+done

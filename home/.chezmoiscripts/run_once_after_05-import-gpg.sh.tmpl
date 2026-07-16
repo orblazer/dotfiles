@@ -1,0 +1,40 @@
+#!/usr/bin/env bash
+# shellcheck shell=bash
+# * Use bitwarden CLI to import GPG keys
+# ! Doesn't use template file because that cause check with `bw` cli on any `chezmoi apply`
+# ! because he can't detect if they realy changed and this command is very slow to execute.
+# ! So since the keys are not changing often, It's better to manually force this script only when needed.
+# ? Unfortunately should necessary use the official `bw` client instead the faster `rbw` (https://github.com/doy/rbw)
+# ? because he doesn't support the attachment for now.
+
+# {{ template "scripts-library" }}
+
+set -eufo pipefail
+
+# Check if gpg is available
+if ! command -v gpg &> /dev/null; then
+  warning "GPG was not found. Skipping GPG key import."
+  exit 0
+fi
+
+info "Import GPG keys"
+
+[[ -z "${BW_SESSION:-}" ]] && export BW_SESSION="$(bw unlock --raw)"
+
+ITEM_ID="$(_bw_get_item 'personal-gpg' '{{ .bitwarden.folder_id }}' | _jq -r .id)"
+
+log "Import GPG public key"
+bw get attachment "gpg_public.asc" --itemid "$ITEM_ID" --output /tmp/gpg_public.asc
+cat /tmp/gpg_public.asc | gpg --import
+rm /tmp/gpg_public.asc
+
+log "Import GPG private key"
+bw get attachment "gpg_private.asc" --itemid "$ITEM_ID" --output /tmp/gpg_private.asc
+cat /tmp/gpg_private.asc | gpg --import
+rm /tmp/gpg_private.asc
+
+log "Import GPG ownertrust"
+bw get attachment "gpg_trust.txt" --itemid "$ITEM_ID" --output /tmp/gpg_trust.txt
+cat /tmp/gpg_trust.txt | gpg --import-ownertrust
+rm /tmp/gpg_trust.txt
+success "GPG keys imported Successfully"

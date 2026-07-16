@@ -1,0 +1,47 @@
+#!/usr/bin/env bash
+# * Use bitwarden CLI to import SSH keys
+# ! Doesn't use template file because that cause check with `bw` cli on any `chezmoi apply`
+# ! because he can't detect if they realy changed and this command is very slow to execute.
+# ! So since the keys are not changing often, It's better to manually force this script only when needed.
+# ? Unfortunately should necessary use the official `bw` client instead the faster `rbw` (https://github.com/doy/rbw)
+# ? because he doesn't support the attachment for now.
+
+# {{ template "scripts-library" }}
+
+set -eufo pipefail
+
+info "Import SSH keys"
+
+[[ -z "${BW_SESSION:-}" ]] && export BW_SESSION="$(bw unlock --raw)"
+
+AUTHORIZED_KEYS="${HOME}/.ssh/authorized_keys"
+if [[ ! -f "${AUTHORIZED_KEYS}" ]]; then
+  touch "${AUTHORIZED_KEYS}"
+  chmod 600 "${AUTHORIZED_KEYS}"
+fi
+
+_provision_key() {
+  local key_name="$1"
+  local file_name="$2"
+  local key_path="$HOME/.ssh/$file_name"
+  local item
+
+  log "Importing SSH \`$key_name\` key to $file_name"
+  item="$(_bw_get_item "$key_name" '{{ .bitwarden.folder_id }}')"
+  echo "$item" | _jq -r .sshKey.privateKey > "$key_path"
+  echo "$item" | _jq -r .sshKey.publicKey > "$key_path".pub
+  chmod 600 "$key_path"
+  chmod 600 "$key_path".pub
+  log_green "SSH \`$key_name\` key imported successfully"
+}
+
+_provision_key "personal-ssh" "id_ed25519"
+cat "${HOME}/.ssh/id_ed25519.pub" >> "${AUTHORIZED_KEYS}"
+
+_provision_key "github-ssh" "github_ed25519"
+
+# Private ssh config from "attachment"
+ITEM_ID="$(_bw_get_item "ssh-config" '{{ .bitwarden.folder_id }}' | _jq -r .id)"
+bw get attachment "homelab.conf" --itemid "$ITEM_ID" --output ~/.ssh/config.d/homelab.conf
+
+success "SSH keys imported Successfully"

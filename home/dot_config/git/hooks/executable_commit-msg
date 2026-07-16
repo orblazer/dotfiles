@@ -1,0 +1,47 @@
+#!/usr/bin/env bash
+# Check for a local hook override
+LOCAL_HOOK="$(git rev-parse --show-toplevel)/.git/hooks/commit-msg"
+if [ -f "$LOCAL_HOOK" ]; then
+    bash "$LOCAL_HOOK" "$1" || exit $?
+    exit 0
+fi
+
+# Read the commit message
+COMMIT_FILE="$1"
+
+# Conventional Commits regex (v1.0.0)
+
+# Regex for the first line: type(scope)!: subject
+REGEX="^(fixup! |squash! )?(feat|fix|docs|style|refactor|perf|test|build|ci|chore|revert)(\([a-z0-9._-]+\))?!?: .+"
+
+# Check first line
+FIRST_LINE=$(head -n1 "$COMMIT_FILE")
+if ! [[ $FIRST_LINE =~ $REGEX ]]; then
+    echo "ERROR: Commit message first line must follow Conventional Commits format:"
+    echo "  Format: type(scope)!: subject"
+    echo "  Examples: feat: add new feature"
+    echo "            fix(parser): handle edge cases"
+    echo "  Current: $FIRST_LINE"
+    exit 1
+fi
+
+# Check body separation (if body exists)
+TOTAL_LINES=$(wc -l < "$COMMIT_FILE")
+if [ $TOTAL_LINES -gt 1 ]; then
+    SECOND_LINE=$(sed -n '2p' "$COMMIT_FILE")
+    if [ -n "$SECOND_LINE" ]; then
+        echo "ERROR: There must be a blank line between the commit subject and the body."
+        exit 1
+    fi
+fi
+
+# Check BREAKING CHANGE section (if present)
+if grep -q "BREAKING CHANGE:" "$COMMIT_FILE"; then
+    LINE_NUM=$(grep -n "BREAKING CHANGE:" "$COMMIT_FILE" | cut -d: -f1)
+    PREV_LINE_NUM=$((LINE_NUM - 1))
+    PREV_LINE=$(sed -n "${PREV_LINE_NUM}p" "$COMMIT_FILE")
+    if [ -n "$PREV_LINE" ]; then
+        echo "ERROR: BREAKING CHANGE must be preceded by a blank line."
+        exit 1
+    fi
+fi

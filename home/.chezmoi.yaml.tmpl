@@ -1,0 +1,15 @@
+{{- $git_email := promptStringOnce . "git.email" "What is your git email address" -}}
+{{- $git_name := promptStringOnce . "git.name" "What is your git name" -}}
+{{- $git_signingkey := promptStringOnce . "git.signingkey" "What is your git signingkey" -}}
+{{- $bw_server := promptStringOnce . "bitwarden.server" "What is your bitwarden server" "https://bitwarden.com" -}}
+
+diff:
+  pager: delta
+data:
+  git:
+    email: {{ $git_email | quote }}
+    name: {{ $git_name | quote }}
+    signingkey: {{ $git_signingkey | quote }}
+  bitwarden:
+    server: {{ $bw_server | quote }}
+    folder_id: '77d14bba-1f65-4dea-96a0-7de8b6b7b4f2' # Computer/keys

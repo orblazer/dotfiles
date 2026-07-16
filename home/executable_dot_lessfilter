@@ -1,0 +1,37 @@
+#!/usr/bin/env bash
+# lesspipe.sh don't use eza, bat, it use ls and exiftool. so we create a lessfilter.
+# Inspired by https://github.com/coderabbitai/dotfiles/blob/master/sw/assets/executable_lessfilter
+has_cmd() {
+	for opt in "$@"; do
+		if command -v "$opt" >/dev/null; then
+			continue
+		else
+			return $?
+		fi
+	done
+}
+
+mime=$(file -bL --mime-type "$1")
+category=${mime%%/*}
+kind=${mime##*/}
+if [ -d "$1" ]; then
+  eza -1lh --git --icons --group-directories-first --sort=name --color=always "$1";
+elif [ "$category" = image ]; then
+  if has_cmd exiftool; then
+    exiftool "$1" | bat --color=always -plyaml
+  fi
+elif [ "$kind" = javascript ]; then
+	if has_cmd bat; then
+		bat --color=always -ljs "$1"
+	fi
+elif [ "$kind" = json ]; then
+	if has_cmd bat; then
+		bat --color=always -ljson "$1"
+	fi
+elif [ "$category" = text ]; then
+	if has_cmd bat; then
+		bat --color=always "$1"
+	fi
+else
+	exit 1
+fi

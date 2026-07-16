@@ -1,0 +1,108 @@
+# `sheldon` configuration file
+# ----------------------------
+#
+# You can modify this file directly or you can use one of the following
+# `sheldon` commands which are provided to assist in editing the config file:
+#
+# - `sheldon add` to add a new plugin to the config file
+# - `sheldon edit` to open up the config file in the default editor
+# - `sheldon remove` to remove a plugin from the config file
+#
+# See the documentation for more https://github.com/rossmacarthur/sheldon#readme
+
+#
+# Inspired by https://github.com/rossmacarthur/dotfiles/blob/trunk/src/sheldon/plugins.toml
+#
+# Load order of zsh-users plugins:
+# https://www.reddit.com/r/zsh/comments/1etl9mz/comment/lie04dt/?utm_source=share&utm_medium=web3x&utm_name=web3xcss&utm_term=1&utm_content=share_button
+# https://github.com/romkatv/zsh-bench?tab=readme-ov-file#deferred-initialization
+
+shell = "zsh"
+
+[templates]
+# Source plugin files after the first prompt is displayed, speeding up shell startup.
+defer = """{{ hooks?.pre | nl }}{% for file in files %}zsh-defer source "{{ file }}"\n{% endfor %}{{ hooks?.post | nl }}"""
+# Same as defer, but waits an extra 0.5s — for low-priority plugins that must load after deferred ones.
+defer-more = """{{ hooks?.pre | nl }}{% for file in files %}zsh-defer -t 0.5 source "{{ file }}"\n{% endfor %}{{ hooks?.post | nl }}"""
+# Add the plugin directory to fpath (for completions and autoloaded functions), without sourcing it.
+fpath = 'fpath=("{{ dir }}" $fpath)'
+# Add the plugin directory to PATH (for plugins that provide executables).
+path = 'path=("{{ dir }}" $path)'
+
+# Completions
+# -----------
+# Fuzzy finder integration: key bindings (Ctrl+R, Ctrl+T, Alt+C) and tab completions.
+[plugins.fzf]
+github = "junegunn/fzf"
+dir = "shell"
+use = ["{completion,key-bindings}.zsh"]
+
+# Sourced
+# -------
+# Defers zsh plugin loading after the first prompt — required by the defer/defer-more templates.
+[plugins.zsh-defer]
+github = "romkatv/zsh-defer"
+
+# Fast and feature-rich prompt theme with instant prompt support.
+[plugins.powerlevel10k]
+github = "romkatv/powerlevel10k"
+hooks.post = "source ${ZDOTDIR:-$HOME}/plugins/p10k.zsh"
+
+# Extra tab completion sources for fzf-tab (e.g. package names, process lists).
+[plugins.fzf-tab-source]
+github = "Freed-Wu/fzf-tab-source"
+
+# Initialize the zsh completion system; deferred so it does not block shell startup.
+[plugins.compinit]
+inline = "autoload -Uz compinit && zsh-defer compinit -d \"${ZSH_COMPDUMP}\""
+
+# Deferred plugins
+# ----------------
+
+# Aliases for completions (for tools like mise)
+# ? Must be loaded after compinit, but before widgets-wrapping plugins (autosuggestions, fast-syntax-highlighting).
+[plugins.completions]
+local = "~/.config/zsh/plugins"
+apply = ["defer"]
+
+# Aliases for kubectl
+# ? Must be loaded after compinit, but before widgets-wrapping plugins (autosuggestions, fast-syntax-highlighting).
+[plugins.kubectl]
+local = "~/.config/zsh/plugins"
+apply = ["defer"]
+
+# Replace zsh's default tab completion with an fzf-powered menu.
+# ? Must be loaded after compinit, but before widgets-wrapping plugins (autosuggestions, fast-syntax-highlighting).
+[plugins.fzf-tab]
+github = "Aloxaf/fzf-tab"
+apply = ["defer"]
+hooks.post = "source ${ZDOTDIR:-$HOME}/plugins/fzf-tab.zsh"
+
+# Fish-like syntax highlighting for the command line as you type.
+[plugins.fast-syntax-highlighting]
+github = "zdharma-continuum/fast-syntax-highlighting"
+apply = ["defer"]
+
+# Enhanced SSH host completion with fzf using entries from ~/.ssh/config.
+[plugins.zsh-ssh]
+github = 'sunlei/zsh-ssh'
+apply = ["defer"]
+
+# Automatically start ssh-agent and manage SSH keys across sessions.
+[plugins.ssh-agent]
+local = "~/.config/zsh/plugins"
+apply = ["defer"]
+
+# Plugins that are even more deferred
+# -----------------------------------
+
+# Search history by typing a substring and pressing Up/Down arrows.
+# ? Must be loaded after fast-syntax-highlighting to avoid widget conflicts.
+[plugins.zsh-history-substring-search]
+github = "zsh-users/zsh-history-substring-search"
+apply = ["defer-more"]
+
+# Fish-like inline suggestions from history as you type.
+[plugins.zsh-autosuggestions]
+github = "zsh-users/zsh-autosuggestions"
+apply = ["defer-more"]

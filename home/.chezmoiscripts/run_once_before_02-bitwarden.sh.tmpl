@@ -1,0 +1,32 @@
+#!/usr/bin/env bash
+# ? Install and configure Bitwarden
+
+# {{ template "scripts-library" }}
+
+set -eufo pipefail
+
+# Bitwarden server URL
+BW_SERVER={{ .bitwarden.server | quote }}
+
+if ! command -v bw &> /dev/null; then
+  error "Bitwarden-cli are not available, need to be installed"
+  return 1
+fi
+
+BW_STATUS="$(bw status)"
+BW_SYNC=$(echo "${BW_STATUS}" | _jq -r ".lastSync" )
+BW_LOCKED="$(echo "${BW_STATUS}" | _jq -r ".status" )"
+
+info "Configure Bitwarden"
+log "Bitwarden status: ${BW_LOCKED} (last sync: ${BW_SYNC})"
+
+if [[ "${BW_LOCKED}" == "unauthenticated" ]]; then
+  log "Login to bitwarden"
+  if [[ "$BW_SERVER" != "https://bitwarden.com" ]]; then
+  bw config server "$BW_SERVER"
+  fi
+  log "Login to Bitwarden (server: $BW_SERVER)"
+  bw login
+fi
+
+success "Bitwarden Successfully"

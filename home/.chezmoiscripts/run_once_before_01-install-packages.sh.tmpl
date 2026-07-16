@@ -1,0 +1,24 @@
+#!/usr/bin/env bash
+# ? Install packages with specific package manager
+
+# {{ template "scripts-library" }}
+
+set -eufo pipefail
+
+{{ if eq .chezmoi.os "linux" -}}
+  {{ if eq .chezmoi.osRelease.id "manjaro" -}}
+  info "Pamac installing packages"
+
+  # Enable AUR on pamac
+  sudo sed -Ei '/EnableAUR/s/^#//' /etc/pamac.conf
+
+  log 'Update PAMAC'
+  sudo pamac update --no-confirm
+
+  log 'Install packages with PAMAC'
+  sudo pamac install --no-confirm {{ .packages.manjaro | join " " }}
+  success "Pamac Successfully"
+  {{ end -}}
+{{ else -}}
+warning "System not supported, packages installation skipped"
+{{ end -}}

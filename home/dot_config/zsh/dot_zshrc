@@ -1,0 +1,123 @@
+# shellcheck shell=bash
+# shellcheck disable=SC2034
+#---------------
+# .zshrc setup
+#---------------
+# Always set these first, so history is preserved, no matter what happens.
+HISTFILE=${XDG_STATE_HOME:-$HOME/.local/state}/zhistory
+
+# Max number of history entries to keep in memory.
+# 1.2 * SAVEHIST is Zsh recommended value for HISTSIZE
+HISTSIZE=14400           # Maximum events in internal history
+SAVEHIST=12000           # Maximum events in history file
+HIST_STAMPS="dd-mm-yyyy" # Add timestamps to history
+
+# Commands to ignore in history (extended pattern matching)
+HISTORY_IGNORE="(ls|ll|l|cd|pwd|exit|clear|history|(h|b)top|:q|(rm|cp|mv|less|more|vim|code|which|man|df|du|free|ps|kill|(c|b)at) *)"
+
+# Options section
+setopt autocd                 # If only directory path is entered, cd there.
+setopt extendedglob           # Extended globbing. Allows using regular expressions with *
+setopt nocaseglob             # Case insensitive globbing
+setopt rcexpandparam          # Array expension with parameters
+setopt nocheckjobs            # Don't warn about running processes when exiting
+setopt numericglobsort        # Sort filenames numerically when it makes sense
+setopt nobeep                 # No beep
+
+## History options
+setopt extended_history       # Record timestamp and duration in history file
+setopt appendhistory          # Immediately append history instead of overwriting
+setopt hist_expire_dups_first # Delete duplicates first when HISTFILE size exceeds HISTSIZE
+setopt hist_find_no_dups      # Do not display duplicates of a line previously found, even if the duplicates are not contiguous
+setopt hist_ignore_dups       # Ignore duplicated commands history list
+setopt hist_ignore_all_dups   # If a new command is a duplicate, remove the older one
+setopt hist_ignore_space      # Remove command lines from the history list when the first character on the line is a space
+setopt hist_no_store          # Remove the history command from the history list when invoked
+setopt hist_reduce_blanks     # Remove superfluous blanks from each command line being added to the history list
+setopt histignorespace        # Don't save commands that start with space
+setopt hist_verify            # Show expanded history command before executing it
+setopt inc_append_history     # Save commands are added to the history immediately, otherwise only when shell exits.
+
+## Directory stack
+setopt pushd_ignore_dups      # Don't push duplicate directories onto the stack
+setopt pushd_silent           # Don't print the directory stack after pushd/popd
+
+#------------------
+# Load ZSH plugins
+#------------------
+eval "$(mise activate zsh)"
+builtin source <(sheldon source)
+
+#------------------
+# Zstyle configurations
+# Remember to use single quotes here!
+# Source for zstyles: https://github.com/fluxninja/dotfiles/blob/master/dot_zshrc
+#------------------
+# Basic completion settings
+zstyle ':completion:*' completer _complete _match _approximate
+zstyle ':completion:*' verbose true
+zstyle ':completion:*' matcher-list 'm:{a-zA-Z}={A-Za-z}' 'r:|[._-]=* r:|=*' 'l:|=* r:|=*'
+zstyle ':completion:*' special-dirs true
+
+# Performance optimizations
+zstyle ':completion:*' accept-exact '*(N)'
+zstyle ':completion:*' complete-options true
+zstyle ':completion:*' file-sort modification
+zstyle ':completion:*' use-cache on
+zstyle ':completion:*' cache-path "${XDG_CACHE_HOME:-$HOME/.cache}/.zcompcache"
+
+# Ignore certain functions
+zstyle ':completion:*:functions' ignored-patterns '(_*|pre(cmd|exec))'
+# Disable sort for git checkout completion
+zstyle ':completion:*:git-checkout:*' sort false
+# Improve command to list processes to list all user process
+zstyle ':completion:*:*:*:*:processes' command "ps -u $USER -o pid,comm -w -w"
+
+#------------------
+# Keybindings
+#------------------
+bindkey -e
+bindkey '^[[7~' beginning-of-line                               # Home key
+bindkey '^[[H' beginning-of-line                                # Home key
+# shellcheck disable=SC2154
+if [[ "${terminfo[khome]}" != "" ]]; then
+  bindkey "${terminfo[khome]}" beginning-of-line                # [Home] - Go to beginning of line
+fi
+bindkey '^[[8~' end-of-line                                     # End key
+bindkey '^[[F' end-of-line                                      # End key
+if [[ "${terminfo[kend]}" != "" ]]; then
+  bindkey "${terminfo[kend]}" end-of-line                       # [End] - Go to end of line
+fi
+bindkey '^[[2~' overwrite-mode                                  # Insert key
+bindkey '^[[3~' delete-char                                     # Delete key
+bindkey '^[[C'  forward-char                                    # Right key
+bindkey '^[[D'  backward-char                                   # Left key
+bindkey '^[[5~' history-beginning-search-backward               # Page up key
+bindkey '^[[6~' history-beginning-search-forward                # Page down key
+bindkey '^[[A' history-substring-search-up                      # Up arrow key
+bindkey '^[[B' history-substring-search-down                    # Down arrow key
+
+# Navigate words with ctrl+arrow keys
+bindkey '^[Oc' forward-word                                     #
+bindkey '^[Od' backward-word                                    #
+bindkey '^[[1;5D' backward-word                                 #
+bindkey '^[[1;5C' forward-word                                  #
+bindkey '^H' backward-kill-word                                 # delete previous word with ctrl+backspace
+bindkey '^[[Z' undo                                             # Shift+tab undo last action
+
+#------------------
+# Functions
+#------------------
+# shellcheck source=/dev/null
+builtin source "${ZDOTDIR:-$HOME}/functions.zsh"
+
+#------------------
+# Aliases
+#------------------
+# Define reload zsh config
+alias reload="exec zsh"
+
+for file in "${ZDOTDIR:-$HOME}"/aliases.d/*.zsh; do
+  # shellcheck source=/dev/null
+  builtin source "$file"
+done

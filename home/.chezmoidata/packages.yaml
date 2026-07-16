@@ -1,0 +1,26 @@
+packages:
+  manjaro:
+    # Terminal
+    - "zsh"
+    - "sheldon"
+    - "fzf"
+    - "eza"
+    - "bat"
+    - "fd"
+    - "git-delta"
+    - "jaq"
+    - "tlrc-bin"
+    - "lesspipe"
+    - "perl-image-exiftool"
+    - "ripgrep"
+    # Tools
+    - "bitwarden-cli-bin"
+    - "gnupg"
+    - "mise-bin"
+    # Applications
+    - "brave-browser"
+    - "discord"
+    # Code
+    - "vscodium-bin"
+    # Font for code & terminal
+    - "ttf-firacode-nerd"

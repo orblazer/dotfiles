@@ -1,0 +1,22 @@
+#!/usr/bin/env bash
+
+# {{ template "scripts-library" }}
+
+set -eufo pipefail
+
+if ! command -v codium &> /dev/null; then
+  warning 'VSCodium is not installed, skipping'
+  exit 0
+fi
+
+info "Installing VSCodium extensions"
+CODE_EXTENSIONS=$(codium --list-extensions)
+TO_INSTALL=({{ .vscodium.extensions | join " " }})
+
+for extension in "${TO_INSTALL[@]}"; do
+  if [[ ! "$CODE_EXTENSIONS" =~ "$extension" ]]; then
+    codium --force --install-extension "$extension"
+  fi
+done
+
+success "VSCodium Successfully"

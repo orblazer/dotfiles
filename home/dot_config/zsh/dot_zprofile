@@ -1,0 +1,153 @@
+# shellcheck shell=bash
+# shellcheck disable=SC2034,SC2155
+#----------------------
+# .zprofile path setup
+#----------------------
+# It's best practice to setup path in .zprofile
+# source: https://mac.install.guide/terminal/zshrc-zprofile
+
+typeset -x ZSH_COMPDUMP="${XDG_CACHE_HOME:-$HOME/.cache}/zcompdump"
+
+
+#----------------------
+# User ZSH completions
+#----------------------
+# shellcheck disable=SC2206
+typeset -x fpath=(${XDG_DATA_HOME:-$HOME/.local/share}/mise-completions/zsh ${ZDOTDIR:-$HOME}/completions $fpath)
+
+#----------------------
+# System Configuration
+#----------------------
+# Locale settings
+# typeset -x LANG=${LANG:-'en_US.UTF-8'}
+
+# Preferred editor for local and remote sessions
+if [[ -n $SSH_CONNECTION ]] || [[ "$USER" == "root" ]]; then
+  typeset -x EDITOR='nano'
+else
+  typeset -x EDITOR='codium --wait'
+fi
+
+# System utilities
+typeset -x VISUAL='codium --wait' \
+    PAGER=less \
+    GPG_TTY=$TTY \
+    SHELL_SESSIONS_DISABLE=1 \
+    MANPAGER="sh -c 'col -xbf | bat -l man -p'"
+
+# Needed for `man`` on linux otherwise have lingering color codes in the output
+typeset -x MANROFFOPT="-c"
+
+# Customize lesspipe.sh behavior to improve the preview in some case (ex: use `eza` and `bat` instead of `ls` and `cat`)
+typeset -x LESSOPEN="|/usr/bin/lesspipe.sh %s"
+# Enable the less color formatting
+typeset -x LESS="-FSRXI"
+
+# Default options for eza (replacing ls)
+typeset -x EZA_OPTIONS="--group --icons --git --group-directories-first --time-style long-iso --color=always"
+typeset -x EZA_DIR_COMMAND="eza $(printf $EZA_OPTIONS) --tree -I node_modules --git-ignore --level 4"
+
+# ssh-agent
+if [[ -f /usr/bin/ksshaskpass ]]; then
+  typeset -x SSH_ASKPASS=/usr/bin/ksshaskpass
+  # Workaround hide print without `SSH_ASKPASS_REQUIRE=prefer`
+  zstyle :omz:plugins:ssh-agent helper "$(basename $SSH_ASKPASS)"
+fi
+
+# History date format
+typeset -x HISTTIMEFORMAT="%d-%m-%Y %H:%M  " # Add timestamps to history
+
+#----------------------
+# Color man pages
+#----------------------
+typeset -x LESS_TERMCAP_mb=$'\E[01;32m'
+typeset -x LESS_TERMCAP_md=$'\E[01;32m'
+typeset -x LESS_TERMCAP_me=$'\E[0m'
+typeset -x LESS_TERMCAP_se=$'\E[0m'
+typeset -x LESS_TERMCAP_so=$'\E[01;47;34m'
+typeset -x LESS_TERMCAP_ue=$'\E[0m'
+typeset -x LESS_TERMCAP_us=$'\E[01;36m'
+
+#----------------------
+# FZF Configuration
+#----------------------
+FD_OPTIONS="--max-depth 4 --follow --hidden --exclude .git --exclude node_modules --exclude dosdevices"
+typeset -x FZF_DEFAULT_COMMAND="fd --type file $FD_OPTIONS"
+
+FZF_THEME="
+--info=inline-right
+--highlight-line
+--color=fg:#e5e9f0,hl:#81a1c1
+--color=fg+:#e5e9f0,bg+:#3B4252,hl+:#81a1c1
+--color=info:#eacb8a,prompt:#bf6069,pointer:#b48dac
+--color=marker:#a3be8b,spinner:#b48dac,header:#a3be8b
+"
+# FZF_THEME="
+# --info=inline-right
+# --highlight-line
+# --color=fg:-1,fg+:#d0d0d0,bg:-1,bg+:#262626
+# --color=hl:#5f87af,hl+:#5fd7ff,info:#afaf87,marker:#87ff00
+# --color=prompt:#d7005f,spinner:#af5fff,pointer:#af5fff,header:#87afaf
+# --color=border:#262626,label:#aeaeae,query:#d9d9d9
+typeset -x FZF_DEFAULT_OPTS="
+--height 35%
+--layout=reverse
+--cycle
+--multi
+${FZF_THEME}
+"
+
+# Search only files
+typeset -x FZF_CTRL_T_COMMAND="$FZF_DEFAULT_COMMAND"
+typeset -x FZF_CTRL_T_OPTS="
+--height=90%
+--preview-window=right:65%
+--prompt='~ ' --pointer='▶' --marker='✓'
+--preview '([[ -f {} ]] && less {}) ||
+          echo {} 2> /dev/null | head -200'
+--bind '?:toggle-preview,ctrl-a:select-all,ctrl-y:execute-silent(echo {+} | pbcopy),ctrl-v:execute(code {+})'
+--bind 'tab:toggle+down,shift-tab:toggle+up'
+"
+
+typeset -x FZF_CTRL_R_OPTS="
+--prompt='History> '
+--bind 'ctrl-/:toggle-preview'
+--preview 'echo {}'
+--preview-window 'down:3:wrap'
+"
+
+# Search only directory to CD
+typeset -x FZF_ALT_C_COMMAND="fd --type directory $FD_OPTIONS"
+typeset -x FZF_ALT_C_OPTS="
+--height=90%
+--preview-window=right:65%
+--prompt='~ ' --pointer='▶' --marker='✓'
+--preview '([[ -d {} ]] && $(printf $EZA_DIR_COMMAND) {} | less) ||
+          echo {} 2> /dev/null | head -200'
+--bind 'ctrl-/:toggle-preview,ctrl-a:select-all,ctrl-y:execute-silent(echo {+} | pbcopy),ctrl-v:execute(code {+})'
+--bind 'tab:toggle+down,shift-tab:toggle+up'
+"
+
+#------------------
+# zsh-users/zsh-autosuggestions
+#------------------
+typeset -g ZSH_AUTOSUGGEST_BUFFER_MAX_SIZE=30
+typeset -g ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE='fg=240'
+typeset -g ZSH_AUTOSUGGEST_MANUAL_REBIND=true
+typeset -g ZSH_AUTOSUGGEST_STRATEGY=(history completion)
+
+#------------------
+# zsh-users/zsh-history-substring-search
+#------------------
+typeset -g HISTORY_SUBSTRING_SEARCH_ENSURE_UNIQUE=true
+typeset -g HISTORY_SUBSTRING_SEARCH_HIGHLIGHT_FOUND='fg=#00cc00,bold'     #p10k green
+typeset -g HISTORY_SUBSTRING_SEARCH_HIGHLIGHT_NOT_FOUND='fg=#FF5C57,bold' #p10k red
+
+#------------------
+# Custom env
+#------------------
+ENV_FILES=()
+for env_file in "${ENV_FILES[@]}"; do
+  # shellcheck source=/dev/null
+  [[ -f ${env_file} ]] && source "${env_file}"
+done

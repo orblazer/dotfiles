@@ -1,0 +1,71 @@
+# shellcheck shell=bash
+set -euo pipefail
+
+log_color() {
+  local color_code="$1"
+  shift
+
+  printf "\033[${color_code}m%s\033[0m\n" "$*" >&2
+}
+
+log_red() {
+  log_color "0;31" "$@"
+}
+log_blue() {
+  log_color "0;34" "$@"
+}
+log_green() {
+  log_color "1;32" "$@"
+}
+log_yellow() {
+  log_color "1;33" "$@"
+}
+
+error() {
+  log_red "❌ $*"
+}
+warning() {
+  log_yellow "⚠️ $*"
+}
+info() {
+  log_blue "ℹ️ $*"
+}
+success() {
+  log_green "✅ $*"
+}
+
+log() {
+  log_blue "$@"
+}
+
+# Use jq or jaq if available
+_jq() {
+  if command -v jq >/dev/null 2>&1; then
+    command jq "$@"
+  elif command -v jaq >/dev/null 2>&1; then
+    command jaq "$@"
+  else
+    error "jq is not installed. Please install jq to use this script."
+    exit 1
+  fi
+}
+
+# Get item from BW inside folder
+_bw_get_item() {
+  local name="$1"
+  local folder_id="$2"
+
+  if [ -n "$folder_id" ]; then
+    local item
+    local status=0
+    item=$(bw list items --folderid "$folder_id" --search "$name" | jq -r '.[0]')
+    if [ -n "$item" ] && [ "$item" != "null" ]; then
+      printf '%s' "$item"
+    else
+      error "Item '$name' not found in folder."
+      return 1
+    fi
+  else
+    bw get item "$name"
+  fi
+}

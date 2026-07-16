@@ -1,0 +1,17 @@
+# shellcheck shell=bash
+#----------------------
+# .zshenv - Zsh environment file, loaded always.
+#----------------------
+# Source: https://github.com/sorin-ionescu/prezto/blob/master/runcoms/zshenv
+
+# Early check if .zprofile exists
+[[ ! -s "${ZDOTDIR:-$HOME}/.zprofile" ]] && return
+
+# Early check if is first level shell or launched from code editor (e.g. VSCode) to avoid loading .zprofile multiple times.
+# ? For editor like VSCode, $SHLVL could be greater than 1, but we still want to load .zprofile for the first level shell launched by the editor.
+[[ "$SHLVL" -eq 1 || $(cat /proc/$PPID/comm 2>/dev/null) =~ (code|antigravity|codium) ]] || return
+
+# Ensure that a non-login, non-interactive shell has a defined environment.
+if [[ ! -o LOGIN ]]; then
+  source "${ZDOTDIR:-$HOME}/.zprofile"
+fi

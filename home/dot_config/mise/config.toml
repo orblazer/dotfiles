@@ -1,0 +1,23 @@
+[settings]
+env_file = '.env'
+experimental = true
+
+# Trust mise config in development directory
+trusted_config_paths = ['~/development/*']
+
+[settings.java]
+shorthand_vendor = "temurin"
+
+[settings.npm]
+package_manager = "pnpm"
+
+[tools]
+chezmoi = "2.71.0"
+flux2 = "latest"
+kubectl = "latest"
+"github:alltuner/mise-completions-sync" = "latest"
+shellcheck = "latest"
+usage = "latest" # needed for mise completion (installed here, cause manjaro package is too old, need 3.5+)
+
+[hooks]
+postinstall = "misecompsync --new-only --shell zsh"

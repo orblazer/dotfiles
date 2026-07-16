@@ -1,0 +1,40 @@
+[user]
+	name = {{ .git.name }}
+	email = {{ .git.email }}
+	signingkey = {{ .git.signingkey }}
+[init]
+	defaultBranch = main
+[core]
+	pager = delta
+  editor = codium --wait
+  askPass = /usr/bin/ksshaskpass
+	autocrlf = input
+	hooksPath = {{ .chezmoi.homeDir }}/git/hooks
+[commit]
+	gpgsign = true
+[tag]
+	gpgSign = true
+[interactive]
+	diffFilter = delta --color-only
+[diff]
+	tool = codium
+[difftool "codium"]
+	cmd = codium --wait --diff $LOCAL $REMOTE
+[merge]
+  tool = codium
+	conflictStyle = zdiff3
+[mergetool "codium"]
+  cmd = codium --wait --merge $REMOTE $LOCAL $BASE $MERGED
+[delta]
+	navigate = true
+	line-numbers = true
+	side-by-side = true
+[pager]
+	tag = sort -V
+	format-patch = cat
+	log = less
+	reflog = less
+	config = bat -pplproperties
+	remote = bat -ppltsv
+	ls-files = parallel eza --color=always --icons
+	check-ignore = parallel eza --color=always --icons

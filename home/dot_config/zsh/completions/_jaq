@@ -1,0 +1,38 @@
+#compdef jaq
+
+# Basic Zsh completion for jaq
+# Covers common options, then a filter expression, then input files.
+
+_jaq() {
+  local -a formats
+  formats=(raw raw0 json yaml cbor toml xml csv tsv)
+
+  _arguments -s -S \
+    '(-h --help)'{-h,--help}'[display help information]' \
+    '(-V --version)'{-V,--version}'[display version information]' \
+    '(-n --null-input)'{-n,--null-input}'[use null as input]' \
+    '(-R --raw-input)'{-R,--raw-input}'[read input as raw strings]' \
+    '--raw-input0[read input as raw strings separated by NUL]' \
+    '(-r --raw-output)'{-r,--raw-output}'[write strings without JSON quoting]' \
+    '--raw-output0[write raw output terminated by NUL]' \
+    '(-j --join-output)'{-j,--join-output}'[do not print a newline after each output]' \
+    '(-c --compact-output)'{-c,--compact-output}'[produce compact output]' \
+    '(-s --slurp)'{-s,--slurp}'[read all inputs into an array before applying the filter]' \
+    '(-S --sort-keys)'{-S,--sort-keys}'[sort object keys]' \
+    '(-C --color-output)'{-C,--color-output}'[force color output]' \
+    '(-M --monochrome-output)'{-M,--monochrome-output}'[disable color output]' \
+    '(-e --exit-status)'{-e,--exit-status}'[use the last output value as exit status]' \
+    '--from[input format]:format:('"${formats[*]}"')' \
+    '--to[output format]:format:('"${formats[*]}"')' \
+    '(-f --from-file)'{-f,--from-file}'[read filter from file]:filter file:_files' \
+    '(-L --library-path)'{-L,--library-path}'[add a library search path]:directory:_files -/' \
+    '--arg[set a string variable]:name: :value:' \
+    '--argjson[set a JSON variable]:name: :value:' \
+    '--slurpfile[read all JSON values from a file into an array variable]:name: :file:_files' \
+    '--rawfile[read a file into a string variable]:name: :file:_files' \
+    '--args[use remaining arguments as positional string arguments]' \
+    '1:filter expression:' \
+    '*:input file:_files'
+}
+
+_jaq "$@"
