@@ -59,12 +59,6 @@ inline = "autoload -Uz compinit && zsh-defer compinit -d \"${ZSH_COMPDUMP}\""
 # Deferred plugins
 # ----------------
 
-# Aliases for completions (for tools like mise)
-# ? Must be loaded after compinit, but before widgets-wrapping plugins (autosuggestions, fast-syntax-highlighting).
-[plugins.completions]
-local = "~/.config/zsh/plugins"
-apply = ["defer"]
-
 # Aliases for kubectl
 # ? Must be loaded after compinit, but before widgets-wrapping plugins (autosuggestions, fast-syntax-highlighting).
 [plugins.kubectl]

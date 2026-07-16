@@ -1,0 +1,12 @@
+#!/usr/bin/env bash
+# ? Configure hooks on mise package to generate completion
+
+# {{ template "scripts-library" }}
+
+set -eufo pipefail
+
+info "Install Mise hook to get completion"
+
+sudo cp '{{ .chezmoi.sourceDir }}/assets/mise-bin.hooks' /usr/share/libalpm/hooks/mise-bin.hook
+
+success "Mise hook completion installed"

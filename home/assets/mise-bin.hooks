@@ -1,0 +1,10 @@
+[Trigger]
+Type = Package
+Operation = Install
+Operation = Upgrade
+Target = mise-bin
+
+[Action]
+Description = Update mise completion
+When = PostTransaction
+Exec = /bin/sh -c 'mise completion zsh  > /usr/share/zsh/site-functions/_mise'
