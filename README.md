@@ -76,7 +76,6 @@ The following tools are managed by Mise:
 
 - **chezmoi**: Manage dotfiles across multiple machines
 - **flux2**: GitOps tool for Kubernetes
-- **jaq**: A `jq`/`yq` clone focussed on correctness, speed, and simplicity
 - **kubectl**: Kubernetes command-line tool
 - **mise-completions-sync**: Synchronize shell completions for mise
 - **shellcheck**: Shell script analysis tool
@@ -101,7 +100,38 @@ During setup, chezmoi will prompt for Bitwarden server information and unlock cr
 
 ## Dotfiles Structure
 
-[to define]
+- `.config/`: Configuration files for various applications
+  - `environment.d/`: Directory for environment variables in `*.conf` files
+  - `git/`: Git configuration directory
+    - `hooks/executable_commit-msg`: Git hook for [conventional commits](https://www.conventionalcommits.org/en/v1.0.0/)
+    - `config.tmpl`: Git configuration template
+  - `mise/config.toml`: Mise configuration
+  - `npm/.npmrc` / `pnpm/rc`: (P)NPM config for conventional commits on release.
+  - `sheldon/plugins.toml`: Sheldon plugin manager configuration
+  - `zsh/`: Custom ZSH configurations
+    - `aliases.d/`: Directory command aliases in `*.zsh` files
+    - `completions/`: Directory custom command completions
+    - `plugins/`: Directory for zsh plugins
+      - `fzf-tab.zsh`: FZF-tab configurations
+      - `kubectl.zsh`: kubectl alias
+      - `p10k.zsh`: Powerlevel10k configurations
+      - `ssh-agent.zsh`: ssh-agent helper (loaded by sheldon with zsh-defer)
+    - `sources/`: Directory for custom fzf-tab sources
+      - `command.zsh`: Custom command source
+      - `tldr.zsh`: TLDR pages source
+    - `.zprofile`: Zsh profile configuration
+    - `.zshenv`: Zsh environment configuration
+    - `.zshrc`: Zsh runtime configuration
+    - `functions.zsh`: Helper functions
+- `.ssh/`: SSH configuration
+  - `config.d`: Directory for SSH configuration environments in `*.conf` files
+  - `config`: SSH client configuration
+  - SSH keys are managed via Bitwarden CLI
+- `.chezmoi.yaml.tmpl`: Chezmoi configuration template
+- `.fdignore`: Ignore some folders from `fd` command
+- `.lessfilter`: Custom filter for `less` to enhance file preview using `eza`, `bat`, and `exiftool`
+- `.profile`: Load environment variables from `.config/environment.d/*.conf`
+- `.zshenv`: Define ZDOTDIR and source `.config/zsh/.zshenv`
 
 ## Resources
 
