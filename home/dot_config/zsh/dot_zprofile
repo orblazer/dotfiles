@@ -18,9 +18,6 @@ typeset -x fpath=(${XDG_DATA_HOME:-$HOME/.local/share}/mise-completions/zsh ${ZD
 #----------------------
 # System Configuration
 #----------------------
-# Locale settings
-# typeset -x LANG=${LANG:-'en_US.UTF-8'}
-
 # Preferred editor for local and remote sessions
 if [[ -n $SSH_CONNECTION ]] || [[ "$USER" == "root" ]]; then
   typeset -x EDITOR='nano'
@@ -82,13 +79,6 @@ FZF_THEME="
 --color=info:#eacb8a,prompt:#bf6069,pointer:#b48dac
 --color=marker:#a3be8b,spinner:#b48dac,header:#a3be8b
 "
-# FZF_THEME="
-# --info=inline-right
-# --highlight-line
-# --color=fg:-1,fg+:#d0d0d0,bg:-1,bg+:#262626
-# --color=hl:#5f87af,hl+:#5fd7ff,info:#afaf87,marker:#87ff00
-# --color=prompt:#d7005f,spinner:#af5fff,pointer:#af5fff,header:#87afaf
-# --color=border:#262626,label:#aeaeae,query:#d9d9d9
 typeset -x FZF_DEFAULT_OPTS="
 --height 35%
 --layout=reverse
