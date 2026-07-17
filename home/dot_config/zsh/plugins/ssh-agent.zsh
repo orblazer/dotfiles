@@ -20,14 +20,14 @@ function _start_agent() {
   fi
 
   # Set a maximum lifetime for identities added to ssh-agent
-  local lifetime="24h"
+  local lifetime
+  zstyle -s :orblazer:ssh-agent lifetime lifetime || lifetime='24h'
 
   # start ssh-agent and setup environment
   ssh-agent -s ${lifetime:+-t} ${lifetime} | sed '/^echo/d' >! "$ssh_env_cache"
   chmod 600 "$ssh_env_cache"
   . "$ssh_env_cache" > /dev/null
-
-  ssh-add -q < /dev/null
 }
-
 _start_agent
+
+unfunction _start_agent
