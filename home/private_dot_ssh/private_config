@@ -1,9 +1,9 @@
-# Add keys loaded with `IdentityFile` to ssh-agent
-AddKeysToAgent yes
-
 Host *
-    ForwardAgent yes
-    ForwardX11 yes
-    IdentitiesOnly yes
+  # Add keys loaded with `IdentityFile` to ssh-agent
+  AddKeysToAgent yes
+
+  ForwardAgent yes
+  ForwardX11 yes
+  IdentitiesOnly yes
 
 Include config.d/*.conf
