@@ -87,6 +87,11 @@ apply = ["defer"]
 local = "~/.config/zsh/plugins"
 apply = ["defer"]
 
+# Automatically start gpg-agent and manage GPG keys across sessions.
+[plugins.gpg-agent]
+local = "~/.config/zsh/plugins"
+apply = ["defer"]
+
 # Plugins that are even more deferred
 # -----------------------------------
 
