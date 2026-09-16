@@ -23,8 +23,7 @@ alias grb='git rebase'
 alias grba='git rebase --abort'
 
 alias gb='git branch'
-alias gco='git checkout'
-alias gcb='git checkout -b'
+alias gsw='git switch'
 
 alias glog='git log --pretty=format:"$_git_log_medium_format" --abbrev-commit --graph'
 
