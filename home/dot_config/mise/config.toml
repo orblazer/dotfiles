@@ -13,11 +13,11 @@ package_manager = "pnpm"
 
 [tools]
 chezmoi = "2.72"
-flux2 = "latest"
-kubectl = "latest"
-"github:alltuner/mise-completions-sync" = "latest"
-shellcheck = "latest"
-usage = "latest" # needed for mise completion (installed here, cause manjaro package is too old, need 3.5+)
+flux2 = "2.9"
+kubectl = "1.36"
+"github:alltuner/mise-completions-sync" = "0.5"
+shellcheck = "0.11"
+usage = "6.9" # needed for mise completion (installed here, cause manjaro package is too old, need 3.5+)
 
 [hooks]
 postinstall = "misecompsync --new-only --shell zsh"
