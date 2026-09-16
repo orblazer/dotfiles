@@ -13,3 +13,7 @@ data:
   bitwarden:
     server: {{ $bw_server | quote }}
     folder_id: '77d14bba-1f65-4dea-96a0-7de8b6b7b4f2' # Computer/keys
+git:
+  autoCommit: true
+  autoPush: true
+  commitMessageTemplate: '{{`{{ promptString "Commit message" }}`}}'
