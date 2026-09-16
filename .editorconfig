@@ -13,3 +13,7 @@ max_line_length = off
 
 [*.{yaml.tmpl,toml.tmpl}]
 indent_size = 2
+
+[**/git/config.tmpl]
+indent_style = tab
+indent_size = 4
