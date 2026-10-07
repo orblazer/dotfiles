@@ -13,6 +13,7 @@ packages:
     - "lesspipe"
     - "perl-image-exiftool"
     - "ripgrep"
+    - "codebook-lsp"
     # Tools
     - "bitwarden-cli-bin"
     - "gnupg"

@@ -1,0 +1,76 @@
+# Dictionaries to use for spell checking.
+# Example: ["en_us", "en_gb"]
+# Available dictionaries:
+#  - English: "en_us", "en_gb"
+#  - Czech: "cs"
+#  - German: "de", "de_at", "de_ch"
+#  - Dutch: "nl_nl"
+#  - Spanish: "es"
+#  - French: "fr"
+#  - Italian: "it"
+#  - Portuguese (Brazil): "pt_br"
+#  - Russian: "ru"
+#  - Swedish: "sv"
+#  - Danish: "da"
+#  - Latvian: "lv"
+#  - Vietnamese: "vi_vn"
+#  - Polish: "pl"
+#  - Ukrainian: "uk"
+#  - Norwegian: "nb_no", "nn_no"
+#  - Portuguese (Portugal): "pt_pt", "pt"
+#  - Persian/Farsi: "fa_ir"
+#  - Slovenian: "sl"
+dictionaries = ["en_us", "fr"]
+
+# Custom allowlist of words to ignore (case-insensitive).
+# Codebook adds words here when you select "Add to dictionary".
+# Example: ["codebook", "rustc"]
+words = []
+
+# Words that should always be flagged as incorrect.
+# Example: ["todo", "fixme"]
+flag_words = []
+
+# Glob patterns for paths to include when spell checking (allowlist).
+# Only files matching one of these patterns will be spell-checked.
+# Empty means include everything.
+# Patterns always use `/` as the separator, on all platforms.
+# Example: ["src/**/*.rs", "lib/**/*.rs"]
+include_paths = []
+
+# Glob patterns for paths to ignore when spell checking (blocklist).
+# Takes precedence over include_paths.
+# Example: ["target/**/*", "**/*.json", ".git/**/*"]
+ignore_paths = []
+
+# Regex patterns to ignore when spell checking. For code files, patterns match
+# against the full source and tokens within matches are skipped.
+# Tip: use single quotes for literal strings to avoid escaping backslashes.
+# Example:
+#   ignore_patterns = [
+#       '\b[ATCG]+\b',           # DNA sequences
+#       '\d{3}-\d{2}-\d{4}',     # Social Security Number format
+#       'https?://[^\s]+',       # URLs
+#   ]
+ignore_patterns = []
+
+# Minimum word length to check (words shorter than this are ignored).
+# Set to 0 to check all words including single letters.
+min_word_length = 3
+
+# Filter which parts of your code are spell-checked by tag.
+# Tags use a dot-separated hierarchy (e.g., "comment", "identifier.function").
+# Matching is prefix-based: "comment" matches "comment", "comment.line",
+# "comment.block", etc.
+
+# Only check these tags. Empty means check everything.
+# Example: ["comment", "string"]
+include_tags = []
+
+# Exclude these tags from checking (takes precedence over include_tags).
+# Example: ["string.heredoc"]
+exclude_tags = []
+
+# Whether to use global configuration.
+# Set to false to completely ignore global settings.
+use_global = true
