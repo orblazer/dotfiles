@@ -11,6 +11,7 @@ alias k='kubectl'
 
 # Apply a YML file
 alias kaf='kubectl apply -f'
+alias kdelf='kubectl delete -f'
 # Apply a kustomization directory
 alias kapk='kubectl apply -k'
 
